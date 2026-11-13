@@ -3,27 +3,183 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Pulse Grid Studio</title>
+<title>Grid Flicker: Block Puzzle — free on Google Play</title>
+<meta name="description" content="Grid Flicker is a relaxing 8x8 block puzzle with Classic, Pulse and Daily Challenge modes. No timer, works offline. Free on Google Play.">
+<meta property="og:title" content="Grid Flicker: Block Puzzle">
+<meta property="og:description" content="A relaxing 8x8 block puzzle with Classic, Pulse and Daily Challenge modes. Free on Google Play.">
+<meta property="og:image" content="https://gridflicker.com/img/gameplay_midgame.jpg">
+<link rel="icon" href="/favicon.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:#0f1630;color:#e8ecff;line-height:1.5}
-main{max-width:640px;margin:0 auto;padding:48px 16px}
-h1{font-size:28px;margin:0 0 4px}h2{font-size:20px;margin:32px 0 8px}
-p{color:#b9c2e6}a{color:#8fb4ff}
-.card{background:#18214a;border:1px solid #2a3570;padding:20px;margin-top:16px}
+  :root {
+    --night: #101c44;
+    --deep: #0b1433;
+    --slate: #1b2754;
+    --ink: #eef1ff;
+    --muted: #aab4dc;
+    --yellow: #ffc93c;
+    --pink: #ff4f8b;
+    --cyan: #38b6ff;
+    --green: #2ee08f;
+    --purple: #a66bff;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    font-family: "Fredoka", system-ui, sans-serif;
+    color: var(--ink);
+    background:
+      linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px) 0 0 / 56px 56px,
+      linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px) 0 0 / 56px 56px,
+      radial-gradient(1200px 700px at 75% 20%, #1d3275 0%, var(--night) 55%, var(--deep) 100%);
+    background-color: var(--deep);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  a { color: inherit; }
+  a:focus-visible, button:focus-visible { outline: 3px solid var(--yellow); outline-offset: 4px; border-radius: 10px; }
+
+  .page { position: relative; max-width: 1180px; margin: 0 auto; padding: 32px 24px 0; }
+
+  /* floating block pieces (the game's own colors) */
+  .piece { position: absolute; display: grid; gap: 6px; pointer-events: none; z-index: 0; opacity: .9; }
+  .piece i { width: 30px; height: 30px; border-radius: 8px; background: var(--c);
+             box-shadow: inset 0 -5px 0 rgba(0,0,0,.18), inset 0 4px 0 rgba(255,255,255,.28); }
+  .piece i.x { visibility: hidden; }
+  .p1 { --c: var(--pink); grid-template-columns: repeat(3, 30px); top: 120px; left: -40px; transform: rotate(-14deg); }
+  .p2 { --c: var(--cyan); grid-template-columns: repeat(2, 30px); top: 40px; right: 8%; transform: rotate(12deg); }
+  .p3 { --c: var(--green); grid-template-columns: repeat(1, 30px); bottom: 180px; right: -10px; transform: rotate(-8deg); }
+  .p4 { --c: var(--yellow); grid-template-columns: repeat(2, 30px); bottom: 90px; left: 38%; transform: rotate(18deg); }
+
+  header { position: relative; z-index: 1; display: flex; align-items: center; gap: 14px; }
+  header img.logo { height: 64px; width: auto; }
+
+  .hero { position: relative; z-index: 1; display: grid; grid-template-columns: 1.05fr 1fr; gap: 40px; align-items: center; padding: 48px 0 64px; }
+  .hero h1 { font-weight: 700; font-size: clamp(40px, 5.6vw, 72px); line-height: 1.02; margin: 0 0 18px; letter-spacing: -.01em; }
+  .hero p.lede { font-size: 21px; line-height: 1.5; color: var(--muted); max-width: 30ch; margin: 0 0 30px; }
+
+  .stores { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; }
+  .stores .gp img { display: block; height: 82px; width: auto; margin: -12px -10px; } /* official badge has built-in padding */
+  .soon { display: inline-flex; flex-direction: column; justify-content: center; height: 58px; padding: 0 20px; border-radius: 12px;
+          border: 2px dashed rgba(255,255,255,.35); color: var(--muted); font-size: 15px; line-height: 1.15; }
+  .soon strong { color: var(--ink); font-weight: 600; font-size: 18px; }
+
+  .scan { display: flex; align-items: center; gap: 18px; margin-top: 34px; }
+  .scan img { width: 112px; height: 112px; border-radius: 14px; background: #fff; padding: 6px; }
+  .scan p { margin: 0; color: var(--muted); font-size: 17px; line-height: 1.4; max-width: 18ch; }
+
+  /* fanned phone screenshots */
+  .phones { position: relative; height: 600px; }
+  .phone { position: absolute; top: 50%; left: 50%; width: 250px; aspect-ratio: 9 / 16; border-radius: 30px; overflow: hidden;
+           border: 7px solid #0a1230; box-shadow: 0 30px 60px rgba(0,0,0,.45); background: #0a1230; }
+  .phone img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .phone.a { transform: translate(-112%, -46%) rotate(-9deg); }
+  .phone.b { transform: translate(-50%, -54%); z-index: 2; width: 270px; }
+  .phone.c { transform: translate(12%, -46%) rotate(9deg); }
+
+  /* modes */
+  .modes { position: relative; z-index: 1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; padding: 8px 0 72px; }
+  .mode { display: grid; grid-template-columns: 44px 1fr; gap: 16px; align-items: start; }
+  .mode .tile { width: 44px; height: 44px; border-radius: 12px; background: var(--c);
+                box-shadow: inset 0 -6px 0 rgba(0,0,0,.18), inset 0 5px 0 rgba(255,255,255,.28); }
+  .mode h2 { font-size: 24px; font-weight: 600; margin: 2px 0 6px; }
+  .mode p { margin: 0; color: var(--muted); font-size: 17px; line-height: 1.5; max-width: 34ch; }
+
+  footer { position: relative; z-index: 1; border-top: 1px solid rgba(255,255,255,.1); padding: 26px 0 36px; color: var(--muted); font-size: 15px;
+           display: flex; flex-wrap: wrap; gap: 10px 28px; align-items: center; justify-content: space-between; }
+  footer nav { display: flex; flex-wrap: wrap; gap: 10px 22px; }
+  footer a { text-decoration: none; }
+  footer a:hover { color: var(--ink); text-decoration: underline; }
+  footer small { display: block; width: 100%; font-size: 12px; opacity: .7; }
+
+  /* one orchestrated moment: the phones settle in on load */
+  @media (prefers-reduced-motion: no-preference) {
+    .phone { animation: settle .9s cubic-bezier(.2,.8,.2,1) both; }
+    .phone.a { animation-delay: .15s; } .phone.c { animation-delay: .3s; }
+    @keyframes settle { from { opacity: 0; margin-top: 60px; } to { opacity: 1; margin-top: 0; } }
+  }
+
+  @media (max-width: 900px) {
+    .hero { grid-template-columns: 1fr; padding-top: 28px; gap: 8px; text-align: center; }
+    .hero p.lede { margin-left: auto; margin-right: auto; }
+    .stores { justify-content: center; }
+    .scan { display: none; }
+    .phones { height: 470px; order: 2; }
+    .phone { width: 180px; } .phone.b { width: 200px; }
+    .modes { grid-template-columns: 1fr; gap: 22px; max-width: 520px; margin: 0 auto; }
+    .p1 { top: 70px; left: -60px; } .p2 { right: -20px; top: 10px; } .p4 { display: none; }
+  }
+  @media (max-width: 420px) {
+    .page { padding: 20px 16px 0; }
+    header img.logo { height: 52px; }
+    .hero p.lede { font-size: 19px; }
+    .phones { height: 400px; }
+    .phone { width: 150px; border-width: 5px; border-radius: 22px; } .phone.b { width: 170px; }
+  }
 </style>
 </head>
 <body>
-<main>
-<h1>Pulse Grid Studio</h1>
-<p>Independent mobile game developer.</p>
-<div class="card">
-<h2 style="margin-top:0">Grid Flicker: Block Puzzle</h2>
-<p>A relaxing 8x8 block puzzle with Classic, Pulse and Daily Challenge modes.</p>
-<p><a href="https://play.google.com/store/apps/details?id=com.pulsegridstudio.gridflicker">Get it on Google Play</a></p>
-<p><a href="https://gridflicker.com/gridflicker-privacy/">Privacy policy</a></p>
+<div class="page">
+  <div class="piece p1" aria-hidden="true"><i></i><i></i><i></i><i class="x"></i><i></i><i class="x"></i></div>
+  <div class="piece p2" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+  <div class="piece p3" aria-hidden="true"><i></i><i></i><i></i></div>
+  <div class="piece p4" aria-hidden="true"><i></i><i class="x"></i><i></i><i></i></div>
+
+  <header>
+    <img class="logo" src="/img/logo.png" alt="Grid Flicker" width="900" height="339">
+  </header>
+
+  <main>
+    <section class="hero">
+      <div>
+        <h1>The block puzzle that never rushes you</h1>
+        <p class="lede">Drop pieces on an 8x8 board and clear rows and columns. No timer, no internet needed, and it's free.</p>
+        <div class="stores">
+          <a class="gp" href="https://play.google.com/store/apps/details?id=com.pulsegridstudio.gridflicker&amp;referrer=utm_source%3Dsite%26utm_medium%3Dlanding">
+            <img src="/img/google-play-badge.png" alt="Get it on Google Play" width="646" height="250">
+          </a>
+          <span class="soon"><strong>App Store</strong>coming soon</span>
+        </div>
+        <div class="scan">
+          <img src="/img/qr.svg" alt="QR code that opens Grid Flicker on Google Play" width="112" height="112">
+          <p>On a computer? Scan with your phone to install.</p>
+        </div>
+      </div>
+      <div class="phones" aria-label="Screenshots of Grid Flicker">
+        <div class="phone a"><img src="/img/pulse_game.jpg" alt="Pulse mode with an almost full energy bar" width="540" height="960"></div>
+        <div class="phone b"><img src="/img/gameplay_midgame.jpg" alt="Classic game in progress" width="540" height="960"></div>
+        <div class="phone c"><img src="/img/daily_game.jpg" alt="Daily Challenge board" width="540" height="960"></div>
+      </div>
+    </section>
+
+    <section class="modes" aria-label="Game modes">
+      <div class="mode" style="--c: var(--cyan)">
+        <div class="tile" aria-hidden="true"></div>
+        <div><h2>Classic</h2><p>Place the three pieces, clear lines, chase your best score.</p></div>
+      </div>
+      <div class="mode" style="--c: var(--purple)">
+        <div class="tile" aria-hidden="true"></div>
+        <div><h2>Pulse</h2><p>Clear lines on energy cells to charge the bar, then blast any 3x3 area.</p></div>
+      </div>
+      <div class="mode" style="--c: var(--pink)">
+        <div class="tile" aria-hidden="true"></div>
+        <div><h2>Daily Challenge</h2><p>One new board every day, the same for every player.</p></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <span>© 2026 Pulse Grid Studio</span>
+    <nav>
+      <a href="/gridflicker-privacy/">Privacy policy</a>
+      <a href="mailto:pulsegrid.studio@gmail.com">Contact</a>
+    </nav>
+    <small>Google Play and the Google Play logo are trademarks of Google LLC.</small>
+  </footer>
 </div>
-<h2>Contact</h2>
-<p><a href="mailto:pulsegrid.studio@gmail.com">pulsegrid.studio@gmail.com</a></p>
-</main>
 </body>
 </html>
